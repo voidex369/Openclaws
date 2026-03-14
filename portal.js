@@ -1,6 +1,7 @@
 const GITHUB_OWNER = "voidex369";
 const GITHUB_REPO = "Openclaws";
 const CONTENT_DIR = "content";
+const BRANCH = "main";
 
 async function loadProjects() {
   const grid = document.getElementById('projects');
@@ -10,7 +11,7 @@ async function loadProjects() {
   stats.textContent = '';
 
   try {
-    const url = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${CONTENT_DIR}`;
+    const url = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${CONTENT_DIR}?ref=${BRANCH}`;
     const res = await fetch(url);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const items = await res.json();
@@ -43,8 +44,30 @@ async function loadProjects() {
     search.addEventListener('input', e => render(e.target.value));
   } catch (err) {
     console.error(err);
-    grid.innerHTML = `<p style="color:#ef4444;grid-column:1/-1">Failed to load projects. Check console or <a href="https://github.com/${GITHUB_OWNER}/${GITHUB_REPO}/tree/main/${CONTENT_DIR}">view directly on GitHub</a>.</p>`;
-    stats.textContent = 'Error';
+    // Fallback hardcoded list
+    const fallback = ["security-platform-20260314-0046","security-toolkit-2024","vulnerability-scanner-2024","cloudsec-suite-2024","devsecops-pipeline-2024"];
+    stats.textContent = `${fallback.length} projects (offline)`;
+    const renderFallback = (filter='') => {
+      grid.innerHTML = '';
+      const filtered = fallback.filter(name => name.toLowerCase().includes(filter.toLowerCase()));
+      filtered.forEach(name => {
+        const meta = getMeta(name);
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <div class="card-img">${meta.icon}</div>
+          <div class="card-body">
+            <div class="badges">${meta.badges.map(b => `<span class="badge ${b}">${b}</span>`).join('')}</div>
+            <h3 class="card-title">${meta.title}</h3>
+            <p class="card-desc">${meta.desc}</p>
+            <a class="card-btn" href="${CONTENT_DIR}/${name}/" target="_blank">Open Project →</a>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    };
+    renderFallback();
+    search.addEventListener('input', e => renderFallback(e.target.value));
   }
 }
 
