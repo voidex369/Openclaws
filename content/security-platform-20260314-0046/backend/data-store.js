@@ -1,7 +1,6 @@
-const { Low } = require('lowdb');
+const low = require('lowdb');
 const path = require('path');
 const fs = require('fs');
-const { File } = require('lowdb/adapters/File');
 
 const file = path.join(__dirname, 'data', 'scans.json');
 if (!fs.existsSync(file)) {
@@ -9,6 +8,5 @@ if (!fs.existsSync(file)) {
   fs.writeFileSync(file, '[]');
 }
 
-const adapter = new File(file);
-const db = new Low(adapter);
+const db = low(file);
 module.exports = db;

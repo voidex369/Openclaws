@@ -6,7 +6,6 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Helper to get all scans (ensures db is read)
 async function getAllScans() {
   await db.read();
   return db.data || [];
