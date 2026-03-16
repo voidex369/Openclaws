@@ -1,5 +1,7 @@
-# AI Worker (Python)
-pip install -r requirements.txt
-set OPENROUTER_API_KEY
-python consumer.py
-To seed test: python seed_queue.py
+# AI Worker (Node.js + BullMQ)
+
+npm install
+cp .env.example .env
+npm start   # or: node consumer.js
+
+To seed test: node seed_queue.js
